@@ -22,6 +22,72 @@ var getBeers = function(){
 
 }
 
+var createTopOption = function(){
+  var optionAtTop = document.createElement('option');
+  optionAtTop.innerText  = "Select a beer"
+  optionAtTop.disabled = true;
+  optionAtTop.selected = true;
+  return optionAtTop;
+}
+
+var formBeerDropDown = function(){
+  var beers = getBeers();
+  var select = document.querySelector('#select-beers');
+  select.appendChild(createTopOption());
+  beers.forEach(function(beer, index){
+    var option = document.createElement('option');
+    option.innerText = beer.name;
+    option.value = index;
+    select.appendChild(option);
+  })
+}
+
+var formatBeerText = function(beer){
+  let name = `Name: ${beer.name} \n\n`;
+  let description = `Description: ${beer.description}\n\n`;
+  let abv = `ABV: ${beer.abv}%\n\n`;
+  let foodPairing = `Food pairing: ${beer.food_pairing}`
+  return name + description + abv + foodPairing;
+}
+
+var handleOptionSelected = function(country){
+  var pBeerInfo = document.querySelector('#beer-info');
+  var pBeerPic = document.querySelector('#beer-pic');
+  var pBeerIngredientsTitle = document.querySelector('#ingredients-title')
+  var jsonString = localStorage.getItem('Beers array');
+  var beers = JSON.parse(jsonString);
+  var beer = beers[this.value];
+
+  pBeerIngredientsTitle.innerText = "Ingredients"
+  pBeerInfo.innerText = formatBeerText(beer);
+  pBeerPic.appendChild(createBeerImageFromURL(beer));
+  createBeerIngredientsList(beer);
+}
+
+var createBeerIngredientsArray = function(beer){
+  var ingredientsArray = [];
+  beer.ingredients.malt.forEach(function(item){
+    ingredientsArray.push(`Malt: ${item.name}`);
+  })
+  beer.ingredients.hops.forEach(function(item){
+    ingredientsArray.push(`Hops: ${item.name}`);
+  })
+  ingredientsArray.push(`Yeast: ${beer.ingredients.yeast}`);
+  return ingredientsArray.filter(function(item, index){
+  return ingredientsArray.indexOf(item)== index; 
+});
+}
+
+var createBeerIngredientsList = function(beer){
+  var ul = document.querySelector('#ingredients-list');
+  let ingredients = createBeerIngredientsArray(beer);
+  ingredients.forEach(function(ingredient){
+    var li = document.createElement('li');
+    li.innerText = ingredient;
+    ul.appendChild(li);
+  })
+}
+
 var createBeerListItems = function(beerArray){
   var ul = document.querySelector('#list-beers');
   beerArray.forEach(function(beer){
@@ -48,11 +114,6 @@ var createBeerImageFromURL = function(beer){
   return pic
 }
 
-
-
-
-
-
 var formBeersList = function(){
   var beers = getBeers()
   console.log(beers);
@@ -66,7 +127,11 @@ var app = function(){
   var url = "https://api.punkapi.com/v2/beers";
   makeRequest(url, requestComplete);
 
-  formBeersList();
+  var select = document.querySelector('#select-beers');
+  select.addEventListener('change', handleOptionSelected);
+
+  // formBeersList();
+  formBeerDropDown();
 
 }
 
