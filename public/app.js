@@ -74,12 +74,13 @@ var createBeerIngredientsArray = function(beer){
   })
   ingredientsArray.push(`Yeast: ${beer.ingredients.yeast}`);
   return ingredientsArray.filter(function(item, index){
-  return ingredientsArray.indexOf(item)== index; 
+  return ingredientsArray.indexOf(item)== index;
 });
 }
 
 var createBeerIngredientsList = function(beer){
   var ul = document.querySelector('#ingredients-list');
+  ul.innerHTML = "";
   let ingredients = createBeerIngredientsArray(beer);
   ingredients.forEach(function(ingredient){
     var li = document.createElement('li');
